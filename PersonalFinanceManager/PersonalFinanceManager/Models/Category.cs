@@ -18,16 +18,14 @@ namespace PersonalFinanceManager.Models
         public Category()
         {
             this.Subcategories = new HashSet<Subcategory>();
-            this.Transactions = new HashSet<Transaction>();
         }
     
         public int CategoryID { get; set; }
         public int UserID { get; set; }
+        public string CategoryName { get; set; }
     
         public virtual User User { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Subcategory> Subcategories { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Transaction> Transactions { get; set; }
     }
 }

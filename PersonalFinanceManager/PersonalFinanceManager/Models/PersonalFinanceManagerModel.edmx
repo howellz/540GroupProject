@@ -4,13 +4,14 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="PersonalFinanceManagerDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="PersonalFinanceManagerDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Categories">
           <Key>
             <PropertyRef Name="CategoryID" />
           </Key>
           <Property Name="CategoryID" Type="int" Nullable="false" />
           <Property Name="UserID" Type="int" Nullable="false" />
+          <Property Name="CategoryName" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Subcategories">
           <Key>
@@ -19,6 +20,7 @@
           <Property Name="SubcategoryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="CategoryID" Type="int" Nullable="false" />
           <Property Name="Value" Type="int" Nullable="false" />
+          <Property Name="SubcategoryName" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Transactions">
           <Key>
@@ -26,7 +28,7 @@
           </Key>
           <Property Name="TransactionsID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserID" Type="int" Nullable="false" />
-          <Property Name="CategoryID" Type="int" Nullable="false" />
+          <Property Name="SubcategoryID" Type="int" Nullable="false" />
           <Property Name="Value" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="User">
@@ -63,15 +65,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Transactions_Categories">
-          <End Role="Categories" Type="Self.Categories" Multiplicity="1" />
+        <Association Name="FK_Transactions_Subcategories">
+          <End Role="Subcategories" Type="Self.Subcategories" Multiplicity="1" />
           <End Role="Transactions" Type="Self.Transactions" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Categories">
-              <PropertyRef Name="CategoryID" />
+            <Principal Role="Subcategories">
+              <PropertyRef Name="SubcategoryID" />
             </Principal>
             <Dependent Role="Transactions">
-              <PropertyRef Name="CategoryID" />
+              <PropertyRef Name="SubcategoryID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -100,8 +102,8 @@
             <End Role="Categories" EntitySet="Categories" />
             <End Role="Subcategories" EntitySet="Subcategories" />
           </AssociationSet>
-          <AssociationSet Name="FK_Transactions_Categories" Association="Self.FK_Transactions_Categories">
-            <End Role="Categories" EntitySet="Categories" />
+          <AssociationSet Name="FK_Transactions_Subcategories" Association="Self.FK_Transactions_Subcategories">
+            <End Role="Subcategories" EntitySet="Subcategories" />
             <End Role="Transactions" EntitySet="Transactions" />
           </AssociationSet>
           <AssociationSet Name="FK_Transactions_User" Association="Self.FK_Transactions_User">
@@ -109,8 +111,7 @@
             <End Role="Transactions" EntitySet="Transactions" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="PersonalFinanceManagerDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -122,7 +123,7 @@
           <Property Name="UserID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="User" Relationship="Self.FK_Categories_User" FromRole="Categories" ToRole="User" />
           <NavigationProperty Name="Subcategories" Relationship="Self.FK_Subcategories_Categories" FromRole="Categories" ToRole="Subcategories" />
-          <NavigationProperty Name="Transactions" Relationship="Self.FK_Transactions_Categories" FromRole="Categories" ToRole="Transactions" />
+          <Property Name="CategoryName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Subcategory">
           <Key>
@@ -132,6 +133,8 @@
           <Property Name="CategoryID" Type="Int32" Nullable="false" />
           <Property Name="Value" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Category" Relationship="Self.FK_Subcategories_Categories" FromRole="Subcategories" ToRole="Categories" />
+          <Property Name="SubcategoryName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Transactions" Relationship="PersonalFinanceManagerDBModel.FK_Transactions_Subcategories" FromRole="Subcategory" ToRole="Transaction" />
         </EntityType>
         <EntityType Name="Transaction">
           <Key>
@@ -139,10 +142,10 @@
           </Key>
           <Property Name="TransactionsID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserID" Type="Int32" Nullable="false" />
-          <Property Name="CategoryID" Type="Int32" Nullable="false" />
           <Property Name="Value" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Category" Relationship="Self.FK_Transactions_Categories" FromRole="Transactions" ToRole="Categories" />
           <NavigationProperty Name="User" Relationship="Self.FK_Transactions_User" FromRole="Transactions" ToRole="User" />
+          <Property Name="SubcategoryID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Subcategory" Relationship="PersonalFinanceManagerDBModel.FK_Transactions_Subcategories" FromRole="Transaction" ToRole="Subcategory" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -180,18 +183,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Transactions_Categories">
-          <End Role="Categories" Type="Self.Category" Multiplicity="1" />
-          <End Role="Transactions" Type="Self.Transaction" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Categories">
-              <PropertyRef Name="CategoryID" />
-            </Principal>
-            <Dependent Role="Transactions">
-              <PropertyRef Name="CategoryID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Transactions_User">
           <End Role="User" Type="Self.User" Multiplicity="1" />
           <End Role="Transactions" Type="Self.Transaction" Multiplicity="*" />
@@ -217,15 +208,27 @@
             <End Role="Categories" EntitySet="Categories" />
             <End Role="Subcategories" EntitySet="Subcategories" />
           </AssociationSet>
-          <AssociationSet Name="FK_Transactions_Categories" Association="Self.FK_Transactions_Categories">
-            <End Role="Categories" EntitySet="Categories" />
-            <End Role="Transactions" EntitySet="Transactions" />
-          </AssociationSet>
           <AssociationSet Name="FK_Transactions_User" Association="Self.FK_Transactions_User">
             <End Role="User" EntitySet="Users" />
             <End Role="Transactions" EntitySet="Transactions" />
           </AssociationSet>
+          <AssociationSet Name="FK_Transactions_Subcategories" Association="PersonalFinanceManagerDBModel.FK_Transactions_Subcategories">
+            <End Role="Subcategory" EntitySet="Subcategories" />
+            <End Role="Transaction" EntitySet="Transactions" />
+          </AssociationSet>
         </EntityContainer>
+        <Association Name="FK_Transactions_Subcategories">
+          <End Type="PersonalFinanceManagerDBModel.Subcategory" Role="Subcategory" Multiplicity="1" />
+          <End Type="PersonalFinanceManagerDBModel.Transaction" Role="Transaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Subcategory">
+              <PropertyRef Name="SubcategoryID" />
+            </Principal>
+            <Dependent Role="Transaction">
+              <PropertyRef Name="SubcategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -235,6 +238,7 @@
           <EntitySetMapping Name="Categories">
             <EntityTypeMapping TypeName="PersonalFinanceManagerDBModel.Category">
               <MappingFragment StoreEntitySet="Categories">
+                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
                 <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
               </MappingFragment>
@@ -243,6 +247,7 @@
           <EntitySetMapping Name="Subcategories">
             <EntityTypeMapping TypeName="PersonalFinanceManagerDBModel.Subcategory">
               <MappingFragment StoreEntitySet="Subcategories">
+                <ScalarProperty Name="SubcategoryName" ColumnName="SubcategoryName" />
                 <ScalarProperty Name="SubcategoryID" ColumnName="SubcategoryID" />
                 <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
                 <ScalarProperty Name="Value" ColumnName="Value" />
@@ -252,9 +257,9 @@
           <EntitySetMapping Name="Transactions">
             <EntityTypeMapping TypeName="PersonalFinanceManagerDBModel.Transaction">
               <MappingFragment StoreEntitySet="Transactions">
+                <ScalarProperty Name="SubcategoryID" ColumnName="SubcategoryID" />
                 <ScalarProperty Name="TransactionsID" ColumnName="TransactionsID" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
-                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
                 <ScalarProperty Name="Value" ColumnName="Value" />
               </MappingFragment>
             </EntityTypeMapping>

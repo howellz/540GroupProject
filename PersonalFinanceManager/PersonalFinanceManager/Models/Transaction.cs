@@ -16,10 +16,10 @@ namespace PersonalFinanceManager.Models
     {
         public int TransactionsID { get; set; }
         public int UserID { get; set; }
-        public int CategoryID { get; set; }
         public int Value { get; set; }
+        public int SubcategoryID { get; set; }
     
-        public virtual Category Category { get; set; }
         public virtual User User { get; set; }
+        public virtual Subcategory Subcategory { get; set; }
     }
 }

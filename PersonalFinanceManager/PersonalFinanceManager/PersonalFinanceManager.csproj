@@ -158,9 +158,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Category.cs">
-      <DependentUpon>PersonalFinanceManagerModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\PersonalFinanceManagerModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -175,15 +172,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>PersonalFinanceManagerModel.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Subcategory.cs">
-      <DependentUpon>PersonalFinanceManagerModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Transaction.cs">
-      <DependentUpon>PersonalFinanceManagerModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\User.cs">
-      <DependentUpon>PersonalFinanceManagerModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -216,6 +204,8 @@
     <Content Include="Models\PersonalFinanceManagerModel.edmx.diagram">
       <DependentUpon>PersonalFinanceManagerModel.edmx</DependentUpon>
     </Content>
+    <None Include="Properties\PublishProfiles\PersonalFinanceManager - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\PersonalFinanceManager20171026014350 - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -227,7 +217,9 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
