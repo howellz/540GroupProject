@@ -115,15 +115,37 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="PersonalFinanceManagerDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="PersonalFinanceManagerDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Categories" EntityType="PersonalFinanceManagerDBModel.Category" />
+          <EntitySet Name="Subcategories" EntityType="PersonalFinanceManagerDBModel.Subcategory" />
+          <EntitySet Name="Transactions" EntityType="PersonalFinanceManagerDBModel.Transaction" />
+          <EntitySet Name="Users" EntityType="PersonalFinanceManagerDBModel.User" />
+          <AssociationSet Name="FK_Categories_User" Association="PersonalFinanceManagerDBModel.FK_Categories_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Category" EntitySet="Categories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Subcategories_Categories" Association="PersonalFinanceManagerDBModel.FK_Subcategories_Categories">
+            <End Role="Category" EntitySet="Categories" />
+            <End Role="Subcategory" EntitySet="Subcategories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transactions_Subcategories" Association="PersonalFinanceManagerDBModel.FK_Transactions_Subcategories">
+            <End Role="Subcategory" EntitySet="Subcategories" />
+            <End Role="Transaction" EntitySet="Transactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transactions_User" Association="PersonalFinanceManagerDBModel.FK_Transactions_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Transaction" EntitySet="Transactions" />
+          </AssociationSet>
+        </EntityContainer>
         <EntityType Name="Category">
           <Key>
             <PropertyRef Name="CategoryID" />
           </Key>
           <Property Name="CategoryID" Type="Int32" Nullable="false" />
           <Property Name="UserID" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="Self.FK_Categories_User" FromRole="Categories" ToRole="User" />
-          <NavigationProperty Name="Subcategories" Relationship="Self.FK_Subcategories_Categories" FromRole="Categories" ToRole="Subcategories" />
           <Property Name="CategoryName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="User" Relationship="PersonalFinanceManagerDBModel.FK_Categories_User" FromRole="Category" ToRole="User" />
+          <NavigationProperty Name="Subcategories" Relationship="PersonalFinanceManagerDBModel.FK_Subcategories_Categories" FromRole="Category" ToRole="Subcategory" />
         </EntityType>
         <EntityType Name="Subcategory">
           <Key>
@@ -132,8 +154,8 @@
           <Property Name="SubcategoryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CategoryID" Type="Int32" Nullable="false" />
           <Property Name="Value" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Category" Relationship="Self.FK_Subcategories_Categories" FromRole="Subcategories" ToRole="Categories" />
           <Property Name="SubcategoryName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Category" Relationship="PersonalFinanceManagerDBModel.FK_Subcategories_Categories" FromRole="Subcategory" ToRole="Category" />
           <NavigationProperty Name="Transactions" Relationship="PersonalFinanceManagerDBModel.FK_Transactions_Subcategories" FromRole="Subcategory" ToRole="Transaction" />
         </EntityType>
         <EntityType Name="Transaction">
@@ -142,81 +164,47 @@
           </Key>
           <Property Name="TransactionsID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserID" Type="Int32" Nullable="false" />
-          <Property Name="Value" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="Self.FK_Transactions_User" FromRole="Transactions" ToRole="User" />
           <Property Name="SubcategoryID" Type="Int32" Nullable="false" />
+          <Property Name="Value" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Subcategory" Relationship="PersonalFinanceManagerDBModel.FK_Transactions_Subcategories" FromRole="Transaction" ToRole="Subcategory" />
+          <NavigationProperty Name="User" Relationship="PersonalFinanceManagerDBModel.FK_Transactions_User" FromRole="Transaction" ToRole="User" />
         </EntityType>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="UserID" />
           </Key>
           <Property Name="UserID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserFirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="UserLastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Password" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Categories" Relationship="Self.FK_Categories_User" FromRole="User" ToRole="Categories" />
-          <NavigationProperty Name="Transactions" Relationship="Self.FK_Transactions_User" FromRole="User" ToRole="Transactions" />
+          <Property Name="UserFirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UserLastName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="50" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="Categories" Relationship="PersonalFinanceManagerDBModel.FK_Categories_User" FromRole="User" ToRole="Category" />
+          <NavigationProperty Name="Transactions" Relationship="PersonalFinanceManagerDBModel.FK_Transactions_User" FromRole="User" ToRole="Transaction" />
         </EntityType>
         <Association Name="FK_Categories_User">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Categories" Type="Self.Category" Multiplicity="*" />
+          <End Type="PersonalFinanceManagerDBModel.User" Role="User" Multiplicity="1" />
+          <End Type="PersonalFinanceManagerDBModel.Category" Role="Category" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="User">
               <PropertyRef Name="UserID" />
             </Principal>
-            <Dependent Role="Categories">
+            <Dependent Role="Category">
               <PropertyRef Name="UserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Subcategories_Categories">
-          <End Role="Categories" Type="Self.Category" Multiplicity="1" />
-          <End Role="Subcategories" Type="Self.Subcategory" Multiplicity="*" />
+          <End Type="PersonalFinanceManagerDBModel.Category" Role="Category" Multiplicity="1" />
+          <End Type="PersonalFinanceManagerDBModel.Subcategory" Role="Subcategory" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Categories">
+            <Principal Role="Category">
               <PropertyRef Name="CategoryID" />
             </Principal>
-            <Dependent Role="Subcategories">
+            <Dependent Role="Subcategory">
               <PropertyRef Name="CategoryID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Transactions_User">
-          <End Role="User" Type="Self.User" Multiplicity="1" />
-          <End Role="Transactions" Type="Self.Transaction" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="User">
-              <PropertyRef Name="UserID" />
-            </Principal>
-            <Dependent Role="Transactions">
-              <PropertyRef Name="UserID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityContainer Name="PersonalFinanceManagerDBEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Categories" EntityType="Self.Category" />
-          <EntitySet Name="Subcategories" EntityType="Self.Subcategory" />
-          <EntitySet Name="Transactions" EntityType="Self.Transaction" />
-          <EntitySet Name="Users" EntityType="Self.User" />
-          <AssociationSet Name="FK_Categories_User" Association="Self.FK_Categories_User">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Categories" EntitySet="Categories" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Subcategories_Categories" Association="Self.FK_Subcategories_Categories">
-            <End Role="Categories" EntitySet="Categories" />
-            <End Role="Subcategories" EntitySet="Subcategories" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Transactions_User" Association="Self.FK_Transactions_User">
-            <End Role="User" EntitySet="Users" />
-            <End Role="Transactions" EntitySet="Transactions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Transactions_Subcategories" Association="PersonalFinanceManagerDBModel.FK_Transactions_Subcategories">
-            <End Role="Subcategory" EntitySet="Subcategories" />
-            <End Role="Transaction" EntitySet="Transactions" />
-          </AssociationSet>
-        </EntityContainer>
         <Association Name="FK_Transactions_Subcategories">
           <End Type="PersonalFinanceManagerDBModel.Subcategory" Role="Subcategory" Multiplicity="1" />
           <End Type="PersonalFinanceManagerDBModel.Transaction" Role="Transaction" Multiplicity="*" />
@@ -226,6 +214,18 @@
             </Principal>
             <Dependent Role="Transaction">
               <PropertyRef Name="SubcategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Transactions_User">
+          <End Type="PersonalFinanceManagerDBModel.User" Role="User" Multiplicity="1" />
+          <End Type="PersonalFinanceManagerDBModel.Transaction" Role="Transaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="Transaction">
+              <PropertyRef Name="UserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -239,8 +239,8 @@
             <EntityTypeMapping TypeName="PersonalFinanceManagerDBModel.Category">
               <MappingFragment StoreEntitySet="Categories">
                 <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
-                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -248,30 +248,30 @@
             <EntityTypeMapping TypeName="PersonalFinanceManagerDBModel.Subcategory">
               <MappingFragment StoreEntitySet="Subcategories">
                 <ScalarProperty Name="SubcategoryName" ColumnName="SubcategoryName" />
-                <ScalarProperty Name="SubcategoryID" ColumnName="SubcategoryID" />
-                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
                 <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="SubcategoryID" ColumnName="SubcategoryID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Transactions">
             <EntityTypeMapping TypeName="PersonalFinanceManagerDBModel.Transaction">
               <MappingFragment StoreEntitySet="Transactions">
-                <ScalarProperty Name="SubcategoryID" ColumnName="SubcategoryID" />
-                <ScalarProperty Name="TransactionsID" ColumnName="TransactionsID" />
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="SubcategoryID" ColumnName="SubcategoryID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="TransactionsID" ColumnName="TransactionsID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="PersonalFinanceManagerDBModel.User">
               <MappingFragment StoreEntitySet="User">
-                <ScalarProperty Name="UserID" ColumnName="UserID" />
-                <ScalarProperty Name="UserFirstName" ColumnName="UserFirstName" />
-                <ScalarProperty Name="UserLastName" ColumnName="UserLastName" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="UserLastName" ColumnName="UserLastName" />
+                <ScalarProperty Name="UserFirstName" ColumnName="UserFirstName" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

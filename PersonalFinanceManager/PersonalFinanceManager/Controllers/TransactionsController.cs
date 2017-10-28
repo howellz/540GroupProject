@@ -17,7 +17,7 @@ namespace PersonalFinanceManager.Controllers
         // GET: Transactions
         public ActionResult Index()
         {
-            var transactions = db.Transactions.Include(t => t.Category).Include(t => t.User);
+            var transactions = db.Transactions.Include(t => t.Subcategory).Include(t => t.User);
             return View(transactions.ToList());
         }
 
@@ -39,7 +39,7 @@ namespace PersonalFinanceManager.Controllers
         // GET: Transactions/Create
         public ActionResult Create()
         {
-            ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryID");
+            ViewBag.SubcategoryID = new SelectList(db.Subcategories, "SubcategoryID", "SubcategoryName");
             ViewBag.UserID = new SelectList(db.Users, "UserID", "UserFirstName");
             return View();
         }
@@ -49,7 +49,7 @@ namespace PersonalFinanceManager.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "TransactionsID,UserID,CategoryID,Value")] Transaction transaction)
+        public ActionResult Create([Bind(Include = "TransactionsID,UserID,SubcategoryID,Value")] Transaction transaction)
         {
             if (ModelState.IsValid)
             {
@@ -58,7 +58,7 @@ namespace PersonalFinanceManager.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryID", transaction.CategoryID);
+            ViewBag.SubcategoryID = new SelectList(db.Subcategories, "SubcategoryID", "SubcategoryName", transaction.SubcategoryID);
             ViewBag.UserID = new SelectList(db.Users, "UserID", "UserFirstName", transaction.UserID);
             return View(transaction);
         }
@@ -75,7 +75,7 @@ namespace PersonalFinanceManager.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryID", transaction.CategoryID);
+            ViewBag.SubcategoryID = new SelectList(db.Subcategories, "SubcategoryID", "SubcategoryName", transaction.SubcategoryID);
             ViewBag.UserID = new SelectList(db.Users, "UserID", "UserFirstName", transaction.UserID);
             return View(transaction);
         }
@@ -85,7 +85,7 @@ namespace PersonalFinanceManager.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "TransactionsID,UserID,CategoryID,Value")] Transaction transaction)
+        public ActionResult Edit([Bind(Include = "TransactionsID,UserID,SubcategoryID,Value")] Transaction transaction)
         {
             if (ModelState.IsValid)
             {
@@ -93,7 +93,7 @@ namespace PersonalFinanceManager.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.CategoryID = new SelectList(db.Categories, "CategoryID", "CategoryID", transaction.CategoryID);
+            ViewBag.SubcategoryID = new SelectList(db.Subcategories, "SubcategoryID", "SubcategoryName", transaction.SubcategoryID);
             ViewBag.UserID = new SelectList(db.Users, "UserID", "UserFirstName", transaction.UserID);
             return View(transaction);
         }
